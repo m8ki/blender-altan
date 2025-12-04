@@ -1,0 +1,79 @@
+services:
+  # Blender Image Build (Not a running service, just to build the image)
+  blender-image:
+    build: ./blender-mcp-server
+    image: blender-mcp:latest
+    profiles: ["build"] # Only run when explicitly asked or built
+
+  agent:
+    build: ./agent
+    container_name: agent
+    ports:
+      - "5000:5000"
+    networks:
+      - blender-network
+    depends_on:
+      orchestrator:
+        condition: service_started
+      mongodb:
+        condition: service_started
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - ORCHESTRATOR_URL=http://host.docker.internal:5001
+      - MONGO_URI=mongodb://mongodb:27017/altan
+    env_file:
+      - ./agent/.env
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  orchestrator:
+    build: ./orchestrator
+    container_name: orchestrator
+    network_mode: host  # Required to access minikube on host
+    volumes:
+      - ~/.kube:/root/.kube:ro # Mount kubeconfig as read-only
+      - ~/.minikube:/home/miki/.minikube:ro # Mount minikube certs
+    environment:
+      - KUBECONFIG=/root/.kube/config
+      - MINIKUBE_IP=192.168.49.2
+
+  web-ui:
+    build:
+      context: ./web-ui
+      target: build
+    container_name: web-ui
+    ports:
+      - "5173:5173" # Vite dev port
+      - "8000:80"   # Prod port (if running prod build)
+    networks:
+      - blender-network
+    volumes:
+      - ./web-ui:/app
+      - /app/node_modules
+    command: npm run dev -- --host
+    environment:
+      - VITE_AGENT_URL=http://localhost:5000
+    depends_on:
+      agent:
+        condition: service_healthy
+
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    networks:
+      - blender-network
+    volumes:
+      - mongodb_data:/data/db
+
+networks:
+  blender-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:

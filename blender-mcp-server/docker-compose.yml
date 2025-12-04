@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  blender-mcp:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./renders:/tmp
+    environment:
+      - PYTHONUNBUFFERED=1
+    container_name: blender-mcp-server

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Altan - AI Blender Agent</title>
+    <script type="module" src="/src/main.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Auth Overlay -->
+        <div id="authOverlay" class="auth-overlay">
+            <div class="auth-box">
+                <h2>Welcome to Blender AI</h2>
+                <div class="auth-tabs">
+                    <button class="auth-tab active" onclick="switchAuth('login')">Login</button>
+                    <button class="auth-tab" onclick="switchAuth('register')">Register</button>
+                </div>
+                
+                <form id="authForm">
+                    <input type="text" id="username" placeholder="Username" required>
+                    <input type="password" id="password" placeholder="Password" required>
+                    <button type="submit" id="authSubmit">Login</button>
+                </form>
+                <p id="authError" class="error-message"></p>
+            </div>
+        </div>
+
+        <header>
+            <h1>🎨 Blender AI Agent</h1>
+            <p class="subtitle">Create 3D scenes with natural language</p>
+            <div class="header-controls" style="display: flex; gap: 10px; justify-content: center; align-items: center;">
+                <div id="instancePanel" style="display: none; font-size: 0.8rem; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 4px;">
+                    <span id="instanceId"></span> | <span id="instanceStatus"></span>
+                </div>
+                <div class="status-indicator">
+                    <span class="status-dot" id="statusDot"></span>
+                    <span id="statusText">Connecting...</span>
+                </div>
+                <button id="logoutButton" onclick="logout()" style="padding: 6px 12px; font-size: 0.8rem; background: rgba(255,255,255,0.1);">Logout</button>
+            </div>
+        </header>
+
+        <div class="chat-container">
+            <div class="messages" id="messages">
+                <div class="message assistant">
+                    <div class="message-content">
+                        <p>👋 Hello! I'm your Blender AI assistant. I can help you create 3D scenes!</p>
+                        <p>Try asking me to:</p>
+                        <ul>
+                            <li>"Create a red cube"</li>
+                            <li>"Add a blue sphere next to it"</li>
+                            <li>"Render the scene"</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-container">
+                <input 
+                    type="text" 
+                    id="messageInput" 
+                    placeholder="Type your message... (e.g., 'Create a red cube')"
+                    autocomplete="off"
+                >
+                <button id="sendButton">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                    </svg>
+                </button>
+                <button id="resetButton" title="Reset conversation">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="1 4 1 10 7 10"></polyline>
+                        <polyline points="23 20 23 14 17 14"></polyline>
+                        <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
